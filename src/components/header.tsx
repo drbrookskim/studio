@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Menu } from 'lucide-react';
+import { BookOpen, Menu, Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 import {
@@ -24,9 +24,25 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import React from 'react';
+import React, { Suspense } from 'react';
+import { Input } from '@/components/ui/input';
 
 const navLinks = [{ href: '/editor', label: 'Write Article' }];
+
+const searchBarFallback = (
+  <form className="flex w-full items-center">
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <Input
+        type="search"
+        placeholder="Search articles..."
+        className="w-full pl-9"
+        aria-label="Search articles"
+        disabled
+      />
+    </div>
+  </form>
+);
 
 export function Header() {
   const pathname = usePathname();
@@ -65,7 +81,9 @@ export function Header() {
                 </SheetTitle>
               </SheetHeader>
               <div className="py-4">
-                <SearchBar />
+                <Suspense fallback={searchBarFallback}>
+                  <SearchBar />
+                </Suspense>
               </div>
               <nav className="flex flex-col space-y-2">
                 {navLinks.map((link) => (
@@ -127,14 +145,11 @@ export function Header() {
               </NavigationMenuItem>
               {navLinks.map((link) => (
                 <NavigationMenuItem key={link.href}>
-                  <NavigationMenuLink asChild active={pathname === link.href}>
-                    <Link
-                      href={link.href}
-                      className={navigationMenuTriggerStyle()}
-                    >
+                  <Link href={link.href} legacyBehavior passHref>
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                       {link.label}
-                    </Link>
-                  </NavigationMenuLink>
+                    </NavigationMenuLink>
+                  </Link>
                 </NavigationMenuItem>
               ))}
             </NavigationMenuList>
@@ -142,7 +157,9 @@ export function Header() {
 
           <div className="hidden md:flex flex-1 items-center justify-end space-x-4">
             <div className="w-full max-w-xs">
+              <Suspense fallback={searchBarFallback}>
                 <SearchBar />
+              </Suspense>
             </div>
           </div>
         </div>

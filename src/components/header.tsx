@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Menu, Search } from 'lucide-react';
+import { BookOpen, Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 import {

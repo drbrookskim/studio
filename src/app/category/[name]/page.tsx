@@ -1,6 +1,13 @@
-import { getArticlesByCategory, getCategoryBySlug } from '@/lib/data';
+import { getArticlesByCategory, getCategoryBySlug, getCategories } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/article-card';
+
+export async function generateStaticParams() {
+  const categories = getCategories();
+  return categories.map((category) => ({
+    name: category.slug,
+  }));
+}
 
 export default function CategoryPage({ params }: { params: { name: string } }) {
   const category = getCategoryBySlug(params.name);

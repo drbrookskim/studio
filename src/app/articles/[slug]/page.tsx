@@ -1,11 +1,19 @@
-import { getArticleBySlug } from '@/lib/data';
+import { getArticleBySlug, getArticles } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { formatDate } from '@/lib/utils';
 import { Lightbulb } from 'lucide-react';
+
+export async function generateStaticParams() {
+  const articles = getArticles();
+  return articles.map((article) => ({
+    slug: article.slug,
+  }));
+}
 
 export default function ArticlePage({ params }: { params: { slug: string } }) {
   const article = getArticleBySlug(params.slug);
@@ -72,9 +80,9 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
 function LinkBadge({ category }: { category: { name: string; slug: string } }) {
   return (
-    <a href={`/category/${category.slug}`}>
+    <Link href={`/category/${category.slug}`}>
       <Badge variant="secondary">{category.name}</Badge>
-    </a>
+    </Link>
   );
 }
 

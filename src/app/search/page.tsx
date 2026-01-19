@@ -1,6 +1,6 @@
-import { searchArticles } from '@/lib/data';
-import { ArticleCard } from '@/components/article-card';
 import { SearchBar } from '@/components/search-bar';
+import { SearchResults } from '@/components/search-results';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Suspense } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -20,14 +20,32 @@ const searchBarFallback = (
     </form>
   );
 
-export default function SearchPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const query = typeof searchParams?.q === 'string' ? searchParams.q : '';
-  const articles = searchArticles(query);
+const searchResultsFallback = (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {Array.from({ length: 3 }).map((_, i) => (
+      <div key={i} className="flex flex-col rounded-lg border bg-card shadow-sm">
+        <Skeleton className="h-full w-full aspect-[3/2] rounded-t-lg rounded-b-none" />
+        <div className="flex-grow p-6 space-y-4">
+          <Skeleton className="h-5 w-1/3" />
+          <Skeleton className="h-7 w-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+          </div>
+        </div>
+        <div className="p-6 pt-0 flex items-center space-x-3">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <div className="space-y-1">
+              <Skeleton className="h-4 w-[100px]" />
+            </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
+
+export default function SearchPage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       <header className="max-w-2xl mx-auto text-center mb-12">
@@ -39,31 +57,9 @@ export default function SearchPage({
         </div>
       </header>
 
-      {query && (
-        <div className="text-center mb-8">
-          <p className="text-muted-foreground">
-            Showing {articles.length} result{articles.length !== 1 && 's'} for{' '}
-            <span className="font-semibold text-foreground">"{query}"</span>
-          </p>
-        </div>
-      )}
-
-      {articles.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
-          ))}
-        </div>
-      ) : (
-        query && (
-          <div className="text-center py-16 border rounded-lg bg-card">
-            <h2 className="text-2xl font-semibold mb-2">No results found</h2>
-            <p className="text-muted-foreground">
-              Try a different search term.
-            </p>
-          </div>
-        )
-      )}
+      <Suspense fallback={searchResultsFallback}>
+        <SearchResults />
+      </Suspense>
     </div>
   );
 }
